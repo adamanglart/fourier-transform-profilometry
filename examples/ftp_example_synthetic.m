@@ -1,28 +1,32 @@
-%--------------------------------------------------------------------------
-% Script Name:    ftp_example_synthetic.m
-% Author:         Adam Anglart
-% Date:           June 13, 2024
-% Description:    This script demonstrates the usage of the `ftpStart` 
-%                 function for Fourier Transform Profilometry technique
-%                 by generating synthetic reference and deformed fringe patterns, 
-%                 by imposing phase differences, and recovering these 
-%                 differences with 'ftpStart' to consequently compute height profiles. 
-%                 Two examples are provided: one featuring a Gaussian bell for a smooth 
-%                 demonstration, and another showcasing a triangular prism 
-%                 to highlight the technique's capability with sharp features.
-%
-% Inputs:         None (parameters and synthetic data are generated within 
-%                 the script)
-% Outputs:        Plots of reference fringes, deformed fringes, imposed 
-%                 phase differences, recovered phase differences, and 
-%                 recovered height profiles for both Gaussian bell and 
-%                 triangular prism examples.
-%
-% Notes:          The parameters used for the phase to height relation 
-%                 are based on typical values from water wave experiments. 
-%                 The synthetic generation of fringes is for demonstration 
-%                 purposes.
-%--------------------------------------------------------------------------
+%% Fourier Transform Profilometry - Synthetic example
+
+%{
+--------------------------------------------------------------------------
+Script Name:    ftp_example_synthetic.m
+Author:         Adam Anglart
+Date:           June 13, 2024
+Description:    This script demonstrates the usage of the `ftpStart` 
+                function for Fourier Transform Profilometry technique
+                by generating synthetic reference and deformed fringe patterns, 
+                by imposing phase differences, and recovering these 
+                differences with 'ftpStart' to consequently compute height profiles. 
+                Two examples are provided: one featuring a Gaussian bell for a smooth 
+                demonstration, and another showcasing a triangular prism 
+                to highlight the technique's capability with sharp features.
+
+Inputs:         None (parameters and synthetic data are generated within 
+                the script)
+Outputs:        Plots of reference fringes, deformed fringes, imposed 
+                phase differences, recovered phase differences, and 
+                recovered height profiles for both Gaussian bell and 
+                triangular prism examples.
+
+Notes:          The parameters used for the phase to height relation 
+                are based on typical values from water wave experiments. 
+                The synthetic generation of fringes is for demonstration 
+                purposes.
+--------------------------------------------------------------------------
+%}
 
 clc;
 clear;
