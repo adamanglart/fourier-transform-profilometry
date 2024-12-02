@@ -12,7 +12,7 @@
 
 ## Introduction
 
-This repository contains MATLAB code for **Fourier Transform Profilometry (FTP)**, a non-contact optical method for measuring 3D surface profiles. FTP works by projecting a fringe pattern onto an object, capturing the deformed fringes, and applying Fourier analysis to extract phase information, which is used to reconstruct the surface height. This technique is ideal for applications in various fields, including mechanical engineering, material science, and biomedical imaging.
+This repository contains MATLAB code for **Fourier Transform Profilometry (FTP)**, a non-contact optical method for measuring 3D surface profiles. FTP works by projecting a fringe pattern onto an object, capturing the deformed fringes, and applying Fourier analysis to extract phase information, which is used to reconstruct the surface height. This technique is ideal for applications in various fields, including mechanical engineering, material science, biomedical imaging, and here - fluid mechanics.
 
 ## Features
 
