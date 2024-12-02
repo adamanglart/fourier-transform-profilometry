@@ -1,3 +1,5 @@
+%% Fourier Transform Profilometry - Experimental example (boat wake)
+
 %--------------------------------------------------------------------------
 % Script Name:    ftp_example_experiment.m
 % Author:         Adam Anglart

@@ -35,13 +35,13 @@ You can use the example scripts provided in the `examples` folder to test the FT
     run('examples/ftp_example_experiment.m');
     ```
 
-The results will be saved in the `results` folder and can be visualized as surface profiles.
+The results will be saved in the `examples` folder and can be visualized as surface profiles.
 
 ## Code Explanation
 
-1. **`ftp_parameters.m`**: This file contains the parameters and settings for the FTP algorithm, such as fringe frequency, phase unwrapping, and filtering options.
-2. **`ftp_reconstruction.m`**: This is the core function that processes the fringe data, applies the Fourier transform, and reconstructs the 3D surface profile.
-3. **`printFolderStructure.m`**: This script prints the folder structure of the repository, helping you to navigate the code and data files.
+1. **`ftp_reconstruction.m`**: This is the core function that processes the fringe data, applies the Fourier transform, and reconstructs the 3D surface profile.
+2. **`ftp_parameters.m`**: This file contains the parameters and settings for the FTP algorithm, such as fringe frequency, phase unwrapping, and filtering options.
+
 
 ## Examples
 
