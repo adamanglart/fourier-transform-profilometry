@@ -1,0 +1,508 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      -->
+<title>ftp_example_synthetic</title>
+<meta name="generator" content="MATLAB 24.1">
+<link rel="schema.DC" href="http://purl.org/dc/elements/1.1/">
+<meta name="DC.date" content="2024-12-02">
+<meta name="DC.source" content="ftp_example_synthetic.m">
+<style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style>
+</head>
+<body>
+<div class="content">
+<h2>Contents</h2>
+<div>
+<ul>
+<li>
+<a href="#2">FILTERING</a>
+</li>
+<li>
+<a href="#3">PHASE TO HEIGHT RELATION</a>
+</li>
+<li>
+<a href="#4">Example 1: Gaussian bell</a>
+</li>
+<li>
+<a href="#5">Example 2: Triangular prism</a>
+</li>
+</ul>
+</div>
+<pre class="codeinput">
+<span class="comment">%--------------------------------------------------------------------------</span>
+<span class="comment">% Script Name:    ftp_example_synthetic.m</span>
+<span class="comment">% Author:         Adam Anglart</span>
+<span class="comment">% Date:           June 13, 2024</span>
+<span class="comment">% Description:    This script demonstrates the usage of the `ftpStart`</span>
+<span class="comment">%                 function for Fourier Transform Profilometry technique</span>
+<span class="comment">%                 by generating synthetic reference and deformed fringe patterns,</span>
+<span class="comment">%                 by imposing phase differences, and recovering these</span>
+<span class="comment">%                 differences with 'ftpStart' to consequently compute height profiles.</span>
+<span class="comment">%                 Two examples are provided: one featuring a Gaussian bell for a smooth</span>
+<span class="comment">%                 demonstration, and another showcasing a triangular prism</span>
+<span class="comment">%                 to highlight the technique's capability with sharp features.</span>
+<span class="comment">%</span>
+<span class="comment">% Inputs:         None (parameters and synthetic data are generated within</span>
+<span class="comment">%                 the script)</span>
+<span class="comment">% Outputs:        Plots of reference fringes, deformed fringes, imposed</span>
+<span class="comment">%                 phase differences, recovered phase differences, and</span>
+<span class="comment">%                 recovered height profiles for both Gaussian bell and</span>
+<span class="comment">%                 triangular prism examples.</span>
+<span class="comment">%</span>
+<span class="comment">% Notes:          The parameters used for the phase to height relation</span>
+<span class="comment">%                 are based on typical values from water wave experiments.</span>
+<span class="comment">%                 The synthetic generation of fringes is for demonstration</span>
+<span class="comment">%                 purposes.</span>
+<span class="comment">%--------------------------------------------------------------------------</span>
+
+clc;
+clear;
+close <span class="string">all</span>;
+addpath(fullfile(pwd, <span class="string">'..'</span>, <span class="string">'src'</span>));
+
+<span class="comment">% Some parameters for synthetic generation of the fringes</span>
+<span class="comment">% (just for the sake of examples in this script)</span>
+N = 1000;   x = 1:N;    y = 1:N;
+[X, Y] = meshgrid(x, y);
+k=2*pi/20;
+fringes = sin(k*X);
+</pre>
+<h2 id="2">FILTERING</h2>
+<p>Parameters of the filtering for the FTP function (ftp_reconstruction) Try for example to play first with the parameter 'th' and see the difference in recovered phase difference You could plot each step in the FTP function during execution to understand what is happening</p>
+<pre class="codeinput">th=0.6;     <span class="comment">% width of the gaussian window</span>
+ns=1;       <span class="comment">% 1 - Gaussian window, &lt;1 - Tukey window</span>
+</pre>
+<h2 id="3">PHASE TO HEIGHT RELATION</h2>
+<p>Phase to height relation parameters - depend on the geometry of the setup here for parallel axis optical setup (paper -&gt; DOI:10.1364/AO.48.000380) Some typical values from water wave experiments: (they do not mean much in this code since the images are generated synthetically)</p>
+<pre class="codeinput">w=1500;         <span class="comment">% periodicity of the fringes - depends largely on the camera setup/pixel size</span>
+L=2;            <span class="comment">% distance camera/projector - surface (usually in [m])</span>
+D=0.5;          <span class="comment">% distance camera - projector (usually in [m])</span>
+</pre>
+<h2 id="4">Example 1: Gaussian bell</h2>
+<pre class="codeinput">
+<span class="comment">% Synthetic fringes</span>
+<span class="comment">% Gaussian bell centered at (500, 500)</span>
+sigma = 150;
+center = [500, 500];
+gaussian_bell = 40*exp(-((X-center(1)).^2 + (Y-center(2)).^2) / (2*sigma^2));
+
+<span class="comment">% Deformed fringes - imposing a phase difference</span>
+deformed_fringes_gauss = sin(k*X + gaussian_bell);
+
+<span class="comment">% STEP 1: Recover phase difference</span>
+dphase_gauss = ftp_reconstruction(deformed_fringes_gauss, fringes, th, ns);
+
+<span class="comment">% STEP 2: Phase to height relation</span>
+recovered_height_gauss=L*dphase_gauss./(dphase_gauss-w*D);
+
+<span class="comment">% Plot results for Gaussian bell</span>
+figure(<span class="string">'Position'</span>,[100 100 900 1000]);
+colormap <span class="string">bone</span>
+
+subplot(3, 2, 1);
+pcolor(fringes);
+shading <span class="string">flat</span>
+title(<span class="string">'Reference Fringes (Gaussian)'</span>);
+axis <span class="string">equal</span>
+xlabel(<span class="string">'X'</span>); ylabel(<span class="string">'Y'</span>);
+xlim([1 N]); ylim([1 N])
+
+subplot(3, 2, 2);
+pcolor(deformed_fringes_gauss);
+shading <span class="string">flat</span>
+title(<span class="string">'Deformed Fringes (Gaussian)'</span>);
+axis <span class="string">equal</span>
+xlabel(<span class="string">'X'</span>); ylabel(<span class="string">'Y'</span>);
+xlim([1 N]); ylim([1 N])
+
+subplot(3, 2, 3);
+surf(gaussian_bell);
+shading <span class="string">interp</span>
+title(<span class="string">'Imposed Phase Difference (Gaussian)'</span>);
+axis <span class="string">tight</span>
+xlabel(<span class="string">'X'</span>); ylabel(<span class="string">'Y'</span>);
+zlim([0 40])
+
+subplot(3, 2, 4);
+surf(dphase_gauss);
+shading <span class="string">interp</span>
+title(<span class="string">'Recovered Phase Difference (Gaussian)'</span>);
+axis <span class="string">tight</span>
+xlabel(<span class="string">'X'</span>); ylabel(<span class="string">'Y'</span>);
+zlim([0 40])
+
+subplot(3, 2, 5);
+plot(dphase_gauss(500, :));
+hold <span class="string">on</span>;
+plot(gaussian_bell(500, :),<span class="string">'--'</span>);
+title(<span class="string">'Phase difference profile (through center)'</span>);
+legend(<span class="string">'Recovered'</span>, <span class="string">'Imposed'</span>,<span class="string">'Location'</span>,<span class="string">'southeast'</span>);
+xlabel(<span class="string">'X'</span>);
+ylabel(<span class="string">'Phase'</span>);
+ylim([-1 41])
+
+subplot(3, 2, 6);
+surf(recovered_height_gauss);
+shading <span class="string">flat</span>
+title(<span class="string">'Recovered height  (Gaussian)'</span>);
+axis <span class="string">tight</span>
+xlabel(<span class="string">'X'</span>); ylabel(<span class="string">'Y'</span>);
+
+saveas(gcf, <span class="string">'ftp_example_synthetic_gaussian_bell.png'</span>, <span class="string">'png'</span>);
+</pre>
+<img vspace="5" hspace="5" src="ftp_example_synthetic_01.png" alt=""> <h2 id="5">Example 2: Triangular prism</h2>
+<pre class="codeinput">
+<span class="comment">% Synthetic fringes</span>
+<span class="comment">% Triangular prism along x axis</span>
+triangular_prism = 30*max(0, 1 - abs(X - N/2) / (N/4));
+
+<span class="comment">% Deformed fringes - imposing a phase difference</span>
+deformed_fringes_tri = sin(k*X + triangular_prism);
+
+<span class="comment">% STEP 1: Recover phase difference</span>
+dphase_tri = ftp_reconstruction(deformed_fringes_tri, fringes, th, ns);
+
+<span class="comment">% STEP 2: Phase to height relation</span>
+recovered_height_tri=L*dphase_tri./(dphase_tri-w*D);
+
+<span class="comment">% Plot results for Triangular prism</span>
+figure(<span class="string">'Position'</span>,[100 100 900 1000]);
+colormap <span class="string">bone</span>
+
+subplot(3, 2, 1);
+pcolor(fringes);
+shading <span class="string">flat</span>
+title(<span class="string">'Reference Fringes (Prism)'</span>);
+axis <span class="string">equal</span>
+xlabel(<span class="string">'X'</span>); ylabel(<span class="string">'Y'</span>);
+xlim([1 N]); ylim([1 N])
+
+subplot(3, 2, 2);
+pcolor(deformed_fringes_tri);
+shading <span class="string">flat</span>
+title(<span class="string">'Deformed Fringes (Prism)'</span>);
+axis <span class="string">equal</span>
+xlabel(<span class="string">'X'</span>); ylabel(<span class="string">'Y'</span>);
+xlim([1 N]); ylim([1 N])
+
+subplot(3, 2, 3);
+surf(triangular_prism);
+shading <span class="string">interp</span>
+title(<span class="string">'Imposed Phase Difference (Prism)'</span>);
+axis <span class="string">tight</span>
+xlabel(<span class="string">'X'</span>); ylabel(<span class="string">'Y'</span>);
+
+subplot(3, 2, 4);
+surf(dphase_tri);
+shading <span class="string">interp</span>
+title(<span class="string">'Recovered Phase Difference (Prism)'</span>);
+axis <span class="string">tight</span>
+xlabel(<span class="string">'X'</span>); ylabel(<span class="string">'Y'</span>);
+
+subplot(3, 2, 5);
+plot(dphase_tri(500, :));
+hold <span class="string">on</span>;
+plot(triangular_prism(500, :),<span class="string">'--'</span>);
+title(<span class="string">'Phase difference profile (through center)'</span>);
+legend(<span class="string">'Recovered'</span>, <span class="string">'Imposed'</span>,<span class="string">'Location'</span>,<span class="string">'southeast'</span>);
+xlabel(<span class="string">'X'</span>);
+ylabel(<span class="string">'Phase'</span>);
+ylim([-1 31])
+
+inset_axes = axes(<span class="string">'Position'</span>, [0.35, 0.24, 0.07, 0.07]);
+box <span class="string">on</span>;
+plot(inset_axes, 475:525, dphase_tri(500, 475:525));
+hold <span class="string">on</span>;
+plot(inset_axes, 475:525, triangular_prism(500, 475:525),<span class="string">'--'</span>);
+xlim(inset_axes, [475 525]);
+ylim(inset_axes, [26 31]);
+
+subplot(3, 2, 6);
+surf(recovered_height_tri);
+shading <span class="string">flat</span>
+title(<span class="string">'Recovered height (Prism)'</span>);
+axis <span class="string">tight</span>
+xlabel(<span class="string">'X'</span>); ylabel(<span class="string">'Y'</span>);
+zlim([-0.1 0.01])
+
+saveas(gcf, <span class="string">'ftp_example_synthetic_triangular_prism.png'</span>, <span class="string">'png'</span>);
+</pre>
+<img vspace="5" hspace="5" src="ftp_example_synthetic.png" alt=""> <p class="footer">
+<br>
+<a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2024a</a>
+<br>
+</p>
+</div>
+<!--
+##### SOURCE BEGIN #####
+%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+% Script Name:    ftp_example_synthetic.m
+% Author:         Adam Anglart
+% Date:           June 13, 2024
+% Description:    This script demonstrates the usage of the `ftpStart` 
+%                 function for Fourier Transform Profilometry technique
+%                 by generating synthetic reference and deformed fringe patterns, 
+%                 by imposing phase differences, and recovering these 
+%                 differences with 'ftpStart' to consequently compute height profiles. 
+%                 Two examples are provided: one featuring a Gaussian bell for a smooth 
+%                 demonstration, and another showcasing a triangular prism 
+%                 to highlight the technique's capability with sharp features.
+%
+% Inputs:         None (parameters and synthetic data are generated within 
+%                 the script)
+% Outputs:        Plots of reference fringes, deformed fringes, imposed 
+%                 phase differences, recovered phase differences, and 
+%                 recovered height profiles for both Gaussian bell and 
+%                 triangular prism examples.
+%
+% Notes:          The parameters used for the phase to height relation 
+%                 are based on typical values from water wave experiments. 
+%                 The synthetic generation of fringes is for demonstration 
+%                 purposes.
+%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+
+clc;
+clear;
+close all;
+addpath(fullfile(pwd, '..', 'src'));
+
+% Some parameters for synthetic generation of the fringes 
+% (just for the sake of examples in this script)
+N = 1000;   x = 1:N;    y = 1:N;
+[X, Y] = meshgrid(x, y);
+k=2*pi/20;
+fringes = sin(k*X); 
+
+%% FILTERING 
+% Parameters of the filtering for the FTP function (ftp_reconstruction)
+% Try for example to play first with the parameter 'th' and see the difference in recovered phase difference 
+% You could plot each step in the FTP function during execution to understand what is happening 
+th=0.6;     % width of the gaussian window
+ns=1;       % 1 - Gaussian window, <1 - Tukey window
+
+%% PHASE TO HEIGHT RELATION 
+% Phase to height relation parameters - depend on the geometry of the setup
+% here for parallel axis optical setup (paper -> DOI:10.1364/AO.48.000380)
+% Some typical values from water wave experiments:
+% (they do not mean much in this code since the images are generated synthetically)
+w=1500;         % periodicity of the fringes - depends largely on the camera setup/pixel size
+L=2;            % distance camera/projector - surface (usually in [m])
+D=0.5;          % distance camera - projector (usually in [m])
+
+%% Example 1: Gaussian bell
+
+% Synthetic fringes
+% Gaussian bell centered at (500, 500)
+sigma = 150;
+center = [500, 500];
+gaussian_bell = 40*exp(-((X-center(1)).^2 + (Y-center(2)).^2) / (2*sigma^2));
+
+% Deformed fringes - imposing a phase difference
+deformed_fringes_gauss = sin(k*X + gaussian_bell);
+
+% STEP 1: Recover phase difference
+dphase_gauss = ftp_reconstruction(deformed_fringes_gauss, fringes, th, ns);
+
+% STEP 2: Phase to height relation 
+recovered_height_gauss=L*dphase_gauss./(dphase_gauss-w*D);
+
+% Plot results for Gaussian bell
+figure('Position',[100 100 900 1000]);
+colormap bone
+
+subplot(3, 2, 1);
+pcolor(fringes);
+shading flat
+title('Reference Fringes (Gaussian)');
+axis equal
+xlabel('X'); ylabel('Y'); 
+xlim([1 N]); ylim([1 N])
+
+subplot(3, 2, 2);
+pcolor(deformed_fringes_gauss);
+shading flat
+title('Deformed Fringes (Gaussian)');
+axis equal
+xlabel('X'); ylabel('Y'); 
+xlim([1 N]); ylim([1 N])
+
+subplot(3, 2, 3);
+surf(gaussian_bell);
+shading interp
+title('Imposed Phase Difference (Gaussian)');
+axis tight
+xlabel('X'); ylabel('Y'); 
+zlim([0 40])
+
+subplot(3, 2, 4);
+surf(dphase_gauss);
+shading interp
+title('Recovered Phase Difference (Gaussian)');
+axis tight
+xlabel('X'); ylabel('Y'); 
+zlim([0 40])
+
+subplot(3, 2, 5);
+plot(dphase_gauss(500, :));
+hold on;
+plot(gaussian_bell(500, :),'REPLACE_WITH_DASH_DASH');
+title('Phase difference profile (through center)');
+legend('Recovered', 'Imposed','Location','southeast');
+xlabel('X');
+ylabel('Phase');
+ylim([-1 41])
+
+subplot(3, 2, 6);
+surf(recovered_height_gauss);
+shading flat
+title('Recovered height  (Gaussian)');
+axis tight
+xlabel('X'); ylabel('Y'); 
+
+saveas(gcf, 'ftp_example_synthetic_gaussian_bell.png', 'png');
+
+%% Example 2: Triangular prism
+
+% Synthetic fringes
+% Triangular prism along x axis
+triangular_prism = 30*max(0, 1 - abs(X - N/2) / (N/4));
+
+% Deformed fringes - imposing a phase difference
+deformed_fringes_tri = sin(k*X + triangular_prism);
+
+% STEP 1: Recover phase difference
+dphase_tri = ftp_reconstruction(deformed_fringes_tri, fringes, th, ns);
+
+% STEP 2: Phase to height relation 
+recovered_height_tri=L*dphase_tri./(dphase_tri-w*D);
+
+% Plot results for Triangular prism
+figure('Position',[100 100 900 1000]);
+colormap bone
+
+subplot(3, 2, 1);
+pcolor(fringes);
+shading flat
+title('Reference Fringes (Prism)');
+axis equal
+xlabel('X'); ylabel('Y'); 
+xlim([1 N]); ylim([1 N])
+
+subplot(3, 2, 2);
+pcolor(deformed_fringes_tri);
+shading flat
+title('Deformed Fringes (Prism)');
+axis equal
+xlabel('X'); ylabel('Y'); 
+xlim([1 N]); ylim([1 N])
+
+subplot(3, 2, 3);
+surf(triangular_prism);
+shading interp
+title('Imposed Phase Difference (Prism)');
+axis tight
+xlabel('X'); ylabel('Y'); 
+
+subplot(3, 2, 4);
+surf(dphase_tri);
+shading interp
+title('Recovered Phase Difference (Prism)');
+axis tight
+xlabel('X'); ylabel('Y'); 
+
+subplot(3, 2, 5);
+plot(dphase_tri(500, :));
+hold on;
+plot(triangular_prism(500, :),'REPLACE_WITH_DASH_DASH');
+title('Phase difference profile (through center)');
+legend('Recovered', 'Imposed','Location','southeast');
+xlabel('X');
+ylabel('Phase');
+ylim([-1 31])
+
+inset_axes = axes('Position', [0.35, 0.24, 0.07, 0.07]);
+box on; 
+plot(inset_axes, 475:525, dphase_tri(500, 475:525)); 
+hold on;
+plot(inset_axes, 475:525, triangular_prism(500, 475:525),'REPLACE_WITH_DASH_DASH');
+xlim(inset_axes, [475 525]);
+ylim(inset_axes, [26 31]);
+
+subplot(3, 2, 6);
+surf(recovered_height_tri);
+shading flat
+title('Recovered height (Prism)');
+axis tight
+xlabel('X'); ylabel('Y');
+zlim([-0.1 0.01])
+
+saveas(gcf, 'ftp_example_synthetic_triangular_prism.png', 'png');
+##### SOURCE END #####
+-->
+</body>
+</html>

@@ -1,0 +1,464 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      -->
+<title>ftp_example_experiment</title>
+<meta name="generator" content="MATLAB 24.1">
+<link rel="schema.DC" href="http://purl.org/dc/elements/1.1/">
+<meta name="DC.date" content="2024-12-02">
+<meta name="DC.source" content="ftp_example_experiment.m">
+<style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style>
+</head>
+<body>
+<div class="content">
+<h2>Contents</h2>
+<div>
+<ul>
+<li>
+<a href="#2">Optical setup</a>
+</li>
+<li>
+<a href="#3">Pixel size calculation</a>
+</li>
+<li>
+<a href="#4">Phase difference parameters</a>
+</li>
+<li>
+<a href="#5">Loading images</a>
+</li>
+<li>
+<a href="#6">Phase recovery using ftp_reconstruction</a>
+</li>
+<li>
+<a href="#7">Height profile calculation</a>
+</li>
+</ul>
+</div>
+<pre class="codeinput">
+<span class="comment">%--------------------------------------------------------------------------</span>
+<span class="comment">% Script Name:    ftp_example_experiment.m</span>
+<span class="comment">% Author:         Adam Anglart</span>
+<span class="comment">% Date:           June 20, 2024</span>
+<span class="comment">% Description:    This script demonstrates the use of the `ftp_reconstruction`</span>
+<span class="comment">%                 function for Fourier Transform Profilometry (FTP) using</span>
+<span class="comment">%                 experimental data of a boat wake. The script takes reference and deformed</span>
+<span class="comment">%                 fringe images, computes the phase difference, and then</span>
+<span class="comment">%                 recovers the height profile of a surface based on the</span>
+<span class="comment">%                 phase-to-height relationship.</span>
+<span class="comment">%</span>
+<span class="comment">% Inputs:         The script loads three images:</span>
+<span class="comment">%                 - 'ref.tif': Reference fringe pattern (background)</span>
+<span class="comment">%                 - 'gray.tif': Gray fringe pattern (background)</span>
+<span class="comment">%                 - 'def.tif': Deformed fringe pattern (with phase shift)</span>
+<span class="comment">%</span>
+<span class="comment">% Outputs:        A plot of the recovered height profile of the surface.</span>
+<span class="comment">%</span>
+<span class="comment">% Notes:          The parameters used for phase-to-height conversion are</span>
+<span class="comment">%                 based on experimental setup specifics, including pixel size,</span>
+<span class="comment">%                 camera/projector distances, and fringe parameters. The height</span>
+<span class="comment">%                 is derived from the recovered phase difference using known</span>
+<span class="comment">%                 geometric relationships.</span>
+<span class="comment">%--------------------------------------------------------------------------</span>
+
+clc;
+clear;
+close <span class="string">all</span>;
+
+addpath(fullfile(pwd, <span class="string">'..'</span>, <span class="string">'src'</span>));
+addpath(fullfile(pwd, <span class="string">'..'</span>, <span class="string">'data'</span>));
+
+<span class="comment">%--------------------------------------------------------------------------</span>
+<span class="comment">% Setup parameters (dimensions, pixel size, fringe parameters, etc.)</span>
+<span class="comment">%--------------------------------------------------------------------------</span>
+</pre>
+<h2 id="2">Optical setup</h2>
+<pre class="codeinput">L = 1.88;     <span class="comment">% [m] Distance from camera/projector to surface</span>
+D = 0.45;     <span class="comment">% [m] Distance from camera to projector</span>
+</pre>
+<h2 id="3">Pixel size calculation</h2>
+<pre class="codeinput">T10 = 148;        <span class="comment">% Number of pixels per 10 wavelengths (carrier frequency)</span>
+cm = 10;          <span class="comment">% Length in centimeters for the number of pixels</span>
+pxs = 346.67;     <span class="comment">% Number of pixels corresponding to the length</span>
+px_size = cm / pxs / 100;  <span class="comment">% [m] Pixel size (in meters)</span>
+
+<span class="comment">% Fringes parameters</span>
+l = T10 * px_size / 10;  <span class="comment">% Fringe period (wavelength)</span>
+w = 2 * pi / l;         <span class="comment">% Spatial frequency of the fringes</span>
+</pre>
+<h2 id="4">Phase difference parameters</h2>
+<pre class="codeinput">th = 0.6;  <span class="comment">% Width of the Gaussian window (used in phase recovery)</span>
+ns = 1;     <span class="comment">% Window type: 1 - Gaussian window, &lt;1 - Tukey window</span>
+
+<span class="comment">%--------------------------------------------------------------------------</span>
+<span class="comment">% Load and preprocess images</span>
+<span class="comment">%--------------------------------------------------------------------------</span>
+</pre>
+<h2 id="5">Loading images</h2>
+<p>'ref.tif' is the reference fringe pattern (background) 'gray.tif' is the background gray fringe image 'def.tif' is the deformed fringe pattern after phase shifting</p>
+<pre class="codeinput">dY0B = double(imread(<span class="string">'ref.tif'</span>));    <span class="comment">% Reference fringe image (background)</span>
+dYB = double(imread(<span class="string">'gray.tif'</span>));    <span class="comment">% Background gray fringe image</span>
+temp = double(imread(<span class="string">'def.tif'</span>));    <span class="comment">% Deformed fringe image</span>
+
+<span class="comment">% Subtract the background from the reference fringe to get the corrected reference</span>
+dY0 = dY0B - dYB;  <span class="comment">% Background-subtracted reference fringe</span>
+
+<span class="comment">%--------------------------------------------------------------------------</span>
+<span class="comment">% Phase recovery and height calculation</span>
+<span class="comment">%--------------------------------------------------------------------------</span>
+</pre>
+<h2 id="6">Phase recovery using ftp_reconstruction</h2>
+<p>The function 'ftpStartBasic' is used to recover the phase difference between the deformed fringe image and the reference fringe image.</p>
+<pre class="codeinput">dY = temp - dYB;  <span class="comment">% Subtract background from deformed image</span>
+phase = ftp_reconstruction(dY, dY0, th, ns);  <span class="comment">% Recovered phase difference</span>
+
+<span class="comment">% Handle any NaN values (if the phase function results in undefined values)</span>
+phase(isnan(phase)) = 0;  <span class="comment">% Replace NaN values with 0</span>
+</pre>
+<h2 id="7">Height profile calculation</h2>
+<p>Using the phase difference, we apply the phase-to-height relation</p>
+<pre class="codeinput">eta = L * phase ./ (phase - w * D);  <span class="comment">% Recovered height profile</span>
+
+<span class="comment">%--------------------------------------------------------------------------</span>
+<span class="comment">% Plotting the Results</span>
+<span class="comment">%--------------------------------------------------------------------------</span>
+
+figure(<span class="string">'Position'</span>, [100, 100, 1400, 1000]);
+
+<span class="comment">% Set common color limits for all images</span>
+clim_val = [min([dY0B(:); dYB(:); temp(:)]), 0.7*max([dY0B(:); dYB(:); temp(:)])];
+
+<span class="comment">% Set common axis limits based on the resolution of the images</span>
+xlim_val = [1 size(dYB, 2)];
+ylim_val = [1 size(dYB, 1)];
+
+<span class="comment">% Subplot 1: Reference Image</span>
+subplot(2, 2, 1);
+pcolor(dY0B);
+shading <span class="string">flat</span>;
+title(<span class="string">'Reference Image'</span>);
+xlabel(<span class="string">'X (pixels)'</span>);
+ylabel(<span class="string">'Y (pixels)'</span>);
+axis <span class="string">equal</span>;
+xlim(xlim_val);
+ylim(ylim_val);
+h1 = colorbar;
+colormap <span class="string">bone</span>;
+clim(clim_val);  <span class="comment">% Apply the common color limits using clim</span>
+ylabel(h1, <span class="string">'Intensity'</span>);  <span class="comment">% Label colorbar for intensity</span>
+
+<span class="comment">% Subplot 2: Background Image</span>
+subplot(2, 2, 2);
+pcolor(dYB);
+shading <span class="string">flat</span>;
+title(<span class="string">'Background Image'</span>);
+xlabel(<span class="string">'X (pixels)'</span>);
+ylabel(<span class="string">'Y (pixels)'</span>);
+axis <span class="string">equal</span>;
+xlim(xlim_val);
+ylim(ylim_val);
+h2 = colorbar;
+colormap <span class="string">bone</span>;
+clim(clim_val);  <span class="comment">% Apply the common color limits using clim</span>
+ylabel(h2, <span class="string">'Intensity'</span>);  <span class="comment">% Label colorbar for intensity</span>
+
+<span class="comment">% Subplot 3: Deformed Image</span>
+subplot(2, 2, 3);
+pcolor(temp);
+shading <span class="string">flat</span>;
+title(<span class="string">'Deformed Image'</span>);
+xlabel(<span class="string">'X (pixels)'</span>);
+ylabel(<span class="string">'Y (pixels)'</span>);
+axis <span class="string">equal</span>;
+xlim(xlim_val);
+ylim(ylim_val);
+h3 = colorbar;
+colormap <span class="string">bone</span>;
+clim(clim_val);  <span class="comment">% Apply the common color limits using clim</span>
+ylabel(h3, <span class="string">'Intensity'</span>);  <span class="comment">% Label colorbar for intensity</span>
+
+<span class="comment">% Subplot 4: Recovered Height Profile (Wavefield)</span>
+
+<span class="comment">% Convert pixel coordinates to meters for the wavefield</span>
+x_meter = (1:size(dYB, 2)) * px_size;  <span class="comment">% x in meters</span>
+y_meter = (1:size(dYB, 1)) * px_size;  <span class="comment">% y in meters</span>
+
+subplot(2, 2, 4);
+pcolor(x_meter, y_meter, eta);
+shading <span class="string">flat</span>;
+title(<span class="string">'Recovered Height Profile'</span>);
+xlabel(<span class="string">'x (m)'</span>);
+ylabel(<span class="string">'y (m)'</span>);
+axis <span class="string">equal</span>;
+xlim([min(x_meter), max(x_meter)]);
+ylim([min(y_meter), max(y_meter)]);
+h4 = colorbar;
+clim(8e-3 * [-1 1]);  <span class="comment">% Set the color limits for better contrast</span>
+cmocean(<span class="string">'balance'</span>);   <span class="comment">% Set colormap to 'balance' for improved visual contrast</span>
+ylabel(h4, <span class="string">'Height (mm)'</span>);  <span class="comment">% Label colorbar for height in mm</span>
+
+saveas(gcf, <span class="string">'ftp_example_experiment_boat_wake.png'</span>, <span class="string">'png'</span>);
+<span class="comment">%--------------------------------------------------------------------------</span>
+<span class="comment">% Notes:</span>
+<span class="comment">% 1. The image files ('ref.tif', 'gray.tif', 'def.tif') must be present in</span>
+<span class="comment">%    the working directory for this script to function.</span>
+<span class="comment">% 2. The recovered height map `eta` represents the surface deformation</span>
+<span class="comment">%    based on the phase difference between the reference and deformed fringe</span>
+<span class="comment">%    patterns.</span>
+<span class="comment">% 3. The parameters like pixel size, fringe period, and window type should</span>
+<span class="comment">%    be adjusted based on the specific experimental setup for accurate results.</span>
+<span class="comment">%--------------------------------------------------------------------------</span>
+</pre>
+<img vspace="5" hspace="5" src="ftp_example_experiment_01.png" alt=""> <p class="footer">
+<br>
+<a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2024a</a>
+<br>
+</p>
+</div>
+<!--
+##### SOURCE BEGIN #####
+%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+% Script Name:    ftp_example_experiment.m
+% Author:         Adam Anglart
+% Date:           June 20, 2024
+% Description:    This script demonstrates the use of the `ftp_reconstruction` 
+%                 function for Fourier Transform Profilometry (FTP) using 
+%                 experimental data of a boat wake. The script takes reference and deformed 
+%                 fringe images, computes the phase difference, and then 
+%                 recovers the height profile of a surface based on the 
+%                 phase-to-height relationship.
+%
+% Inputs:         The script loads three images:
+%                 - 'ref.tif': Reference fringe pattern (background)
+%                 - 'gray.tif': Gray fringe pattern (background)
+%                 - 'def.tif': Deformed fringe pattern (with phase shift)
+%
+% Outputs:        A plot of the recovered height profile of the surface.
+%
+% Notes:          The parameters used for phase-to-height conversion are 
+%                 based on experimental setup specifics, including pixel size, 
+%                 camera/projector distances, and fringe parameters. The height 
+%                 is derived from the recovered phase difference using known 
+%                 geometric relationships.
+%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+
+clc;
+clear;
+close all;
+
+addpath(fullfile(pwd, '..', 'src'));
+addpath(fullfile(pwd, '..', 'data'));
+
+%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+% Setup parameters (dimensions, pixel size, fringe parameters, etc.)
+%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+
+%% Optical setup
+L = 1.88;     % [m] Distance from camera/projector to surface
+D = 0.45;     % [m] Distance from camera to projector
+
+%% Pixel size calculation
+T10 = 148;        % Number of pixels per 10 wavelengths (carrier frequency)
+cm = 10;          % Length in centimeters for the number of pixels
+pxs = 346.67;     % Number of pixels corresponding to the length
+px_size = cm / pxs / 100;  % [m] Pixel size (in meters)
+
+% Fringes parameters
+l = T10 * px_size / 10;  % Fringe period (wavelength)
+w = 2 * pi / l;         % Spatial frequency of the fringes
+
+%% Phase difference parameters
+th = 0.6;  % Width of the Gaussian window (used in phase recovery)
+ns = 1;     % Window type: 1 - Gaussian window, <1 - Tukey window
+
+%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+% Load and preprocess images
+%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+
+%% Loading images
+% 'ref.tif' is the reference fringe pattern (background)
+% 'gray.tif' is the background gray fringe image
+% 'def.tif' is the deformed fringe pattern after phase shifting
+dY0B = double(imread('ref.tif'));    % Reference fringe image (background)
+dYB = double(imread('gray.tif'));    % Background gray fringe image
+temp = double(imread('def.tif'));    % Deformed fringe image
+
+% Subtract the background from the reference fringe to get the corrected reference
+dY0 = dY0B - dYB;  % Background-subtracted reference fringe
+
+%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+% Phase recovery and height calculation
+%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+
+%% Phase recovery using ftp_reconstruction
+% The function 'ftpStartBasic' is used to recover the phase difference 
+% between the deformed fringe image and the reference fringe image.
+dY = temp - dYB;  % Subtract background from deformed image
+phase = ftp_reconstruction(dY, dY0, th, ns);  % Recovered phase difference
+
+% Handle any NaN values (if the phase function results in undefined values)
+phase(isnan(phase)) = 0;  % Replace NaN values with 0
+
+%% Height profile calculation
+% Using the phase difference, we apply the phase-to-height relation
+eta = L * phase ./ (phase - w * D);  % Recovered height profile
+
+%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+% Plotting the Results
+%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+
+figure('Position', [100, 100, 1400, 1000]); 
+
+% Set common color limits for all images
+clim_val = [min([dY0B(:); dYB(:); temp(:)]), 0.7*max([dY0B(:); dYB(:); temp(:)])];
+
+% Set common axis limits based on the resolution of the images
+xlim_val = [1 size(dYB, 2)];
+ylim_val = [1 size(dYB, 1)];
+
+% Subplot 1: Reference Image
+subplot(2, 2, 1);
+pcolor(dY0B); 
+shading flat; 
+title('Reference Image');
+xlabel('X (pixels)');
+ylabel('Y (pixels)');
+axis equal;
+xlim(xlim_val);
+ylim(ylim_val);
+h1 = colorbar;
+colormap bone;
+clim(clim_val);  % Apply the common color limits using clim
+ylabel(h1, 'Intensity');  % Label colorbar for intensity
+
+% Subplot 2: Background Image
+subplot(2, 2, 2);
+pcolor(dYB); 
+shading flat;
+title('Background Image');
+xlabel('X (pixels)');
+ylabel('Y (pixels)');
+axis equal;
+xlim(xlim_val);
+ylim(ylim_val);
+h2 = colorbar;
+colormap bone;
+clim(clim_val);  % Apply the common color limits using clim
+ylabel(h2, 'Intensity');  % Label colorbar for intensity
+
+% Subplot 3: Deformed Image
+subplot(2, 2, 3);
+pcolor(temp); 
+shading flat; 
+title('Deformed Image');
+xlabel('X (pixels)');
+ylabel('Y (pixels)');
+axis equal;
+xlim(xlim_val);
+ylim(ylim_val);
+h3 = colorbar;
+colormap bone;
+clim(clim_val);  % Apply the common color limits using clim
+ylabel(h3, 'Intensity');  % Label colorbar for intensity
+
+% Subplot 4: Recovered Height Profile (Wavefield)
+
+% Convert pixel coordinates to meters for the wavefield 
+x_meter = (1:size(dYB, 2)) * px_size;  % x in meters
+y_meter = (1:size(dYB, 1)) * px_size;  % y in meters
+
+subplot(2, 2, 4);
+pcolor(x_meter, y_meter, eta);
+shading flat;
+title('Recovered Height Profile');
+xlabel('x (m)');
+ylabel('y (m)');
+axis equal;
+xlim([min(x_meter), max(x_meter)]);
+ylim([min(y_meter), max(y_meter)]);
+h4 = colorbar;
+clim(8e-3 * [-1 1]);  % Set the color limits for better contrast
+cmocean('balance');   % Set colormap to 'balance' for improved visual contrast
+ylabel(h4, 'Height (mm)');  % Label colorbar for height in mm
+
+saveas(gcf, 'ftp_example_experiment_boat_wake.png', 'png');
+%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+% Notes:
+% 1. The image files ('ref.tif', 'gray.tif', 'def.tif') must be present in 
+%    the working directory for this script to function.
+% 2. The recovered height map `eta` represents the surface deformation 
+%    based on the phase difference between the reference and deformed fringe 
+%    patterns.
+% 3. The parameters like pixel size, fringe period, and window type should 
+%    be adjusted based on the specific experimental setup for accurate results.
+%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+
+
+##### SOURCE END #####
+-->
+</body>
+</html>
